@@ -2,6 +2,7 @@ import { Form } from "@unform/web";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import Input from "../components/Input";
+import ListNumbers from "../components/ListNumbers";
 import { data } from "../data";
 
 interface TypeForm {
@@ -10,13 +11,20 @@ interface TypeForm {
 }
 
 const Home: NextPage = () => {
-  const [dataItens, setDataItens] = useState<Array<TypeData>>([]);
+  const [render, setRender] = useState(0);
+  const [dataItens, setDataItens] = useState<Array<TypeData>>(
+    data.sort((a, b) => a.orden - b.orden)
+  );
 
   const orderBy = (array: Array<TypeData>) => {
     const newArray = array.sort((a, b) => a.orden - b.orden);
-    setDataItens(newArray);
     console.log(newArray);
+    setDataItens(newArray);
   };
+
+  useEffect(() => {
+    orderBy(dataItens);
+  }, [render]); // eslint-disable-line
 
   const handleSubmit = ({ i_newPosition, i_order }: TypeForm) => {
     const order = Number(i_order);
@@ -29,18 +37,16 @@ const Home: NextPage = () => {
       (d: TypeData) => d.orden === newPosition
     );
 
-    // item 3 [current] recebe pos 1 [new]
-
     //pego o index do elemento da origem  para trocar valor de sua ordem
-    const indexSearchElementCurrent = searchElementCurrent[0].orden - 1; //2
+    const indexSearchElementCurrent = searchElementCurrent[0].orden - 1;
 
-    const newArray = data;
+    let newArray = data;
     newArray[indexSearchElementCurrent].orden = newPosition;
 
     // atualizar a ordem dos proximos enquanto index deles forem < order do atual
 
     //pego o index do elemento da origem  para trocar valor de sua ordem
-    const indexSearchElementReplace = searchElementReplace[0].orden - 1; //1
+    const indexSearchElementReplace = searchElementReplace[0].orden - 1;
 
     newArray[indexSearchElementReplace].orden =
       newArray[indexSearchElementReplace].orden + 1;
@@ -54,42 +60,23 @@ const Home: NextPage = () => {
         newArray[i].orden = newArray[i].orden + 1;
     }
 
-    orderBy(newArray);
+    setDataItens(newArray);
+    setRender(render + 1);
   };
 
-  useEffect(() => {
-    orderBy(data);
-  }, []);
+  const handleReset = () => {
+    setDataItens(data);
+    setRender(0);
+  };
 
   return (
     <div className="w-full h-screen flex flex-col items-center justify-center bg-gray-900">
-      <h1 className="my-24">RENDERMOINHO</h1>
-
-      <div className="flex w-full items-center justify-center gap-2">
-        {dataItens.map((d: TypeData, indeContentDiv: number) => (
-          <div
-            key={d.id}
-            className="border rounded p-1 flex flex-col items-center bg-gray-600"
-          >
-            <text className="my-2 text-white">Pos. {indeContentDiv + 1}</text>
-            <div className="w-16 h-16 rounded flex flex-col bg-gray-400 items-center justify-center">
-              <strong>ID #{d.id}</strong>
-              <div>Od. {d.orden}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="my-4 text-gray-500">
-        <strong>Legenda - </strong>
-        <strong>ID</strong>: Identificador <strong>Od</strong>: Ordem do
-        elemento{" "}
-      </div>
+      <ListNumbers dataItens={dataItens} />
 
       <Form onSubmit={handleSubmit} className="flex flex-col gap-1 my-12">
-        <text className="text-xl text-gray-100 font-bold">
+        <label className="text-xl text-gray-100 font-bold">
           Alterar a ordem dos elementos
-        </text>
+        </label>
 
         <p className="text-md text-gray-300 mt-4">Ordem atual do item (Ord)</p>
         <Input name="i_order" />
@@ -104,6 +91,13 @@ const Home: NextPage = () => {
           Salvar
         </button>
       </Form>
+
+      <button
+        className="py-2 my-1 p-16 border border-transparent rounded text-white hover:border hover:border-orange-500 hover:transition"
+        onClick={handleReset}
+      >
+        Redefinir
+      </button>
     </div>
   );
 };
