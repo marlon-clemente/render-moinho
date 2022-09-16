@@ -1,3 +1,8 @@
+# 
+
+[Link do projeto - Vercel](https://render-moinho.vercel.app/)      
+
+
 # :rocket: Tecnologias
 O projeto foi desenvolvido nas seguintes tecnologias:
 
@@ -8,7 +13,7 @@ O projeto foi desenvolvido nas seguintes tecnologias:
 * [Unform](https://github.com/unform/unform)
 
 
-### :bug Bugs
+### :lady_beetle: Bugs
 
 - Não foi implementado a troca de valores quando a ordem tende a ser acima da posição atual.
 - Não foram tratados os valores coletados via input, assim gerando erro quando  inseridos numerais não pertencentes ao intervalo [1 - 10];
